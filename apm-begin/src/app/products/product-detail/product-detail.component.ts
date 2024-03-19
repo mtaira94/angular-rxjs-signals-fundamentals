@@ -1,49 +1,34 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
+import { NgIf, NgFor, CurrencyPipe, AsyncPipe } from '@angular/common';
 import { Product } from '../product';
-import { EMPTY, Subscription, catchError, tap } from 'rxjs';
+import { EMPTY, catchError, tap } from 'rxjs';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'pm-product-detail',
   templateUrl: './product-detail.component.html',
   standalone: true,
-  imports: [NgIf, NgFor, CurrencyPipe]
+  imports: [NgIf, NgFor, CurrencyPipe, AsyncPipe]
 })
-export class ProductDetailComponent implements OnChanges, OnDestroy {
-  @Input() productId: number = 0;
+export class ProductDetailComponent {
   errorMessage = '';
-  subProduct!: Subscription;
   // Product to display
-  product: Product | null = null;
+  product$ = this.productService.product$
+    .pipe(
+      tap(() => console.log(`In component pipeline onSelected`)),
+      catchError(err => {
+        this.errorMessage = err;
+        return EMPTY;
+      })
+    );
 
   constructor(private productService: ProductService) { }
 
   // Set the page title
-  pageTitle = this.product ? `Product Detail for: ${this.product.productName}` : 'Product Detail';
+  // pageTitle = this.product ? `Product Detail for: ${this.product.productName}` : 'Product Detail';
+  pageTitle = 'Product Detail';
 
   addToCart(product: Product) {
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const id = changes['productId'].currentValue;
-    if (!id) return;
-
-    this.subProduct = this.productService.getProduct(id)
-      .pipe(
-        tap(() => console.log(`In component pipeline onSelected`)),
-        catchError(err => {
-          this.errorMessage = err;
-          return EMPTY;
-        })
-      )
-      .subscribe(p => this.product = p);
-  }
-
-  ngOnDestroy(): void {
-    if (this.subProduct) {
-      this.subProduct.unsubscribe();
-    }
   }
 }

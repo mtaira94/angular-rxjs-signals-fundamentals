@@ -15,8 +15,6 @@ import { EMPTY, Subscription, catchError, tap } from 'rxjs';
 export class ProductListComponent {
   pageTitle = 'Products';
   errorMessage = '';
-  // Selected product id to highlight the entry
-  selectedProductId: number = 0;
 
   constructor(private productService: ProductService) { }
 
@@ -28,8 +26,10 @@ export class ProductListComponent {
         return EMPTY;
       })
     );
+  // Selected product
+  readonly selectedProductId$ = this.productService.productSelected$;
 
   onSelected(productId: number): void {
-    this.selectedProductId = productId;
+    this.productService.productSelected(productId);
   }
 }
