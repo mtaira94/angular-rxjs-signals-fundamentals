@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, catchError, concatMap, map, mergeMap, of, switchMap, tap } from 'rxjs';
+import { EMPTY, Observable, catchError, concatMap, map, mergeMap, of, shareReplay, switchMap, tap } from 'rxjs';
 import { Product } from './product';
 import { ProductData } from './product-data';
 import { HttpErrorService } from '../utilities/http-error.service';
@@ -11,7 +11,6 @@ import { Review } from '../reviews/review';
   providedIn: 'root'
 })
 export class ProductService {
-  // Just enough here for the code to compile
   private productsUrl = 'api/products';
 
   constructor(
@@ -20,13 +19,12 @@ export class ProductService {
     private reviewService: ReviewService
   ) { }
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productsUrl)
-      .pipe(
-        tap(p => console.log(`In http.get pipeline`, p)),
-        catchError(err => this.handleError(err))
-      );
-  }
+  readonly products$ = this.http.get<Product[]>(this.productsUrl)
+    .pipe(
+      tap(p => console.log(`In http.get pipeline`, JSON.stringify(p))),
+      shareReplay(1),
+      catchError(err => this.handleError(err))
+    );
 
   getProduct(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.productsUrl}/${id}`)

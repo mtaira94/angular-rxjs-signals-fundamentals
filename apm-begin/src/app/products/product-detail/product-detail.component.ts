@@ -28,17 +28,17 @@ export class ProductDetailComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     const id = changes['productId'].currentValue;
-    if (id) {
-      this.subProduct = this.productService.getProduct(id)
-        .pipe(
-          tap(() => console.log(`In component pipeline onSelected`)),
-          catchError(err => {
-            this.errorMessage = err;
-            return EMPTY;
-          })
-        )
-        .subscribe(p => this.product = p);
-    }
+    if (!id) return;
+
+    this.subProduct = this.productService.getProduct(id)
+      .pipe(
+        tap(() => console.log(`In component pipeline onSelected`)),
+        catchError(err => {
+          this.errorMessage = err;
+          return EMPTY;
+        })
+      )
+      .subscribe(p => this.product = p);
   }
 
   ngOnDestroy(): void {
