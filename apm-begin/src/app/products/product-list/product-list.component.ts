@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
-import { Product } from '../product';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { ProductService } from '../product.service';
-import { EMPTY, Subscription, catchError, tap } from 'rxjs';
+import { EMPTY, catchError } from 'rxjs';
 
 @Component({
   selector: 'pm-product-list',
