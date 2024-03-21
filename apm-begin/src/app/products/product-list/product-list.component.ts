@@ -13,20 +13,13 @@ import { EMPTY, catchError } from 'rxjs';
 })
 export class ProductListComponent {
   pageTitle = 'Products';
-  errorMessage = '';
 
   constructor(private productService: ProductService) { }
 
   // Products
-  readonly products$ = this.productService.products$
-    .pipe(
-      catchError(err => {
-        this.errorMessage = err;
-        return EMPTY;
-      })
-    );
-  // Selected product
-  readonly selectedProductId$ = this.productService.productSelected$;
+  products = this.productService.products;
+  errorMessage = this.productService.productsError;
+  readonly selectedProductId = this.productService.selectedProductId;
 
   onSelected(productId: number): void {
     this.productService.productSelected(productId);
